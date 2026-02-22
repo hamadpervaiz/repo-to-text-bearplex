@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { ChevronRight, ChevronDown, File, Folder, FolderOpen } from 'lucide-react';
+import { ChevronRight, ChevronDown, File, Folder, FolderOpen, FolderTree } from 'lucide-react';
 import { isBinaryFile } from '../utils/formatter';
 
 function TreeNode({ node, selected, onToggle, depth = 0 }) {
@@ -14,7 +14,6 @@ function TreeNode({ node, selected, onToggle, depth = 0 }) {
   const isChecked = selected.has(node.path);
   const binary = !isDir && isBinaryFile(node.path);
 
-  // Compute indeterminate state for directories
   const childState = useMemo(() => {
     if (!isDir) return null;
     const allPaths = getAllFilePaths(node);
@@ -37,21 +36,27 @@ function TreeNode({ node, selected, onToggle, depth = 0 }) {
 
   const checkboxClass = `tree-checkbox${childState === 'some' ? ' indeterminate' : ''}`;
 
+  const ext = node.name.split('.').pop().toLowerCase();
+  const fileColor = getFileColor(ext);
+
   return (
     <div>
       <div
-        className="flex items-center gap-1.5 py-0.5 px-2 hover:bg-[var(--bg-tertiary)] rounded cursor-pointer group"
-        style={{ paddingLeft: `${depth * 16 + 8}px` }}
+        className="tree-row flex items-center gap-1.5 py-[3px] px-2 cursor-pointer group"
+        style={{ paddingLeft: `${depth * 18 + 8}px` }}
       >
         {isDir ? (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="p-0 border-0 bg-transparent text-[var(--text-secondary)] cursor-pointer flex-shrink-0"
+            className="p-0 border-0 bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] cursor-pointer flex-shrink-0 transition-colors"
           >
-            {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            {expanded
+              ? <ChevronDown className="w-3.5 h-3.5" />
+              : <ChevronRight className="w-3.5 h-3.5" />
+            }
           </button>
         ) : (
-          <span className="w-4 flex-shrink-0" />
+          <span className="w-3.5 flex-shrink-0" />
         )}
 
         <input
@@ -62,20 +67,28 @@ function TreeNode({ node, selected, onToggle, depth = 0 }) {
         />
 
         {isDir ? (
-          expanded ? <FolderOpen className="w-4 h-4 text-[var(--accent)] flex-shrink-0" /> : <Folder className="w-4 h-4 text-[var(--accent)] flex-shrink-0" />
+          expanded
+            ? <FolderOpen className="w-4 h-4 text-[var(--accent-light)] flex-shrink-0" />
+            : <Folder className="w-4 h-4 text-[var(--accent)] flex-shrink-0" />
         ) : (
-          <File className="w-4 h-4 text-[var(--text-secondary)] flex-shrink-0" />
+          <File className="w-4 h-4 flex-shrink-0" style={{ color: fileColor }} />
         )}
 
         <span
-          className={`text-sm truncate ${binary ? 'text-[var(--text-secondary)] italic' : 'text-[var(--text-primary)]'}`}
+          className={`text-[13px] truncate leading-tight ${
+            binary
+              ? 'text-[var(--text-muted)] italic'
+              : isDir
+                ? 'text-[var(--text-primary)] font-medium'
+                : 'text-[var(--text-secondary)]'
+          }`}
           onClick={() => isDir && setExpanded(!expanded)}
         >
           {node.name}
         </span>
 
         {!isDir && node.size > 0 && (
-          <span className="text-xs text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 ml-auto flex-shrink-0">
+          <span className="text-[11px] text-[var(--text-muted)] opacity-0 group-hover:opacity-100 ml-auto flex-shrink-0 tabular-nums transition-opacity">
             {formatSize(node.size)}
           </span>
         )}
@@ -92,6 +105,18 @@ function TreeNode({ node, selected, onToggle, depth = 0 }) {
       ))}
     </div>
   );
+}
+
+function getFileColor(ext) {
+  const colors = {
+    js: '#f7df1e', jsx: '#61dafb', ts: '#3178c6', tsx: '#3178c6',
+    py: '#3776ab', rb: '#cc342d', go: '#00add8', rs: '#dea584',
+    java: '#b07219', css: '#563d7c', scss: '#c6538c', html: '#e34c26',
+    json: '#a8a8a8', md: '#ffffff', yml: '#cb171e', yaml: '#cb171e',
+    sh: '#89e051', bash: '#89e051', sql: '#e38c00', vue: '#4fc08d',
+    svelte: '#ff3e00', php: '#4f5d95', swift: '#f05138', kt: '#7f52ff',
+  };
+  return colors[ext] || '#71717a';
 }
 
 function getAllFilePaths(node) {
@@ -132,21 +157,25 @@ export default function DirectoryTree({ tree, selected, onSelectionChange }) {
   const allSelected = selectedCount === totalCount && totalCount > 0;
 
   return (
-    <div>
-      <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--border-color)]">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col h-full">
+      <div className="section-header justify-between">
+        <div className="flex items-center gap-2.5">
+          <FolderTree className="w-4 h-4 text-[var(--accent-light)]" />
+          <span className="text-sm font-medium text-[var(--text-primary)]">Files</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-[var(--text-muted)] tabular-nums">
+            {selectedCount}/{totalCount}
+          </span>
           <input
             type="checkbox"
             checked={allSelected}
             onChange={() => handleToggle(allPaths, !allSelected)}
             className={`tree-checkbox${selectedCount > 0 && !allSelected ? ' indeterminate' : ''}`}
           />
-          <span className="text-sm text-[var(--text-secondary)]">
-            {selectedCount} / {totalCount} files selected
-          </span>
         </div>
       </div>
-      <div className="overflow-auto max-h-[500px] py-1">
+      <div className="overflow-auto flex-1 max-h-[520px] py-1">
         {children.sort((a, b) => {
           if (a.type === 'tree' && b.type !== 'tree') return -1;
           if (a.type !== 'tree' && b.type === 'tree') return 1;
