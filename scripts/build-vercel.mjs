@@ -52,8 +52,7 @@ export default function middleware(request) {
       if (pwd === PASSWORD) {
         return new Response(null, {
           headers: {
-            'x-middleware-next': '1',
-            'x-debug-auth': 'matched'
+            'x-middleware-next': '1'
           }
         });
       }
