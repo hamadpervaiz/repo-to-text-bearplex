@@ -1,4 +1,9 @@
 const GITHUB_API = 'https://api.github.com';
+const DEFAULT_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || '';
+
+export function getToken(userToken) {
+  return userToken || DEFAULT_TOKEN;
+}
 
 export function parseRepoUrl(url) {
   url = url.trim().replace(/\/$/, '');
@@ -29,12 +34,13 @@ function headers(token) {
 }
 
 export async function fetchDefaultBranch(owner, repo, token) {
+  const tk = getToken(token);
   const res = await fetch(`${GITHUB_API}/repos/${owner}/${repo}`, {
-    headers: headers(token),
+    headers: headers(tk),
   });
   if (!res.ok) {
-    if (res.status === 404) throw new Error('Repository not found. Check the URL or provide a token for private repos.');
-    if (res.status === 403) throw new Error('API rate limit exceeded. Provide a GitHub token to increase limits.');
+    if (res.status === 404) throw new Error('Repository not found. Make sure hamad@bearplex.com has access to this repository.');
+    if (res.status === 403) throw new Error('API rate limit exceeded. Please try again in a few minutes.');
     throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
   }
   const data = await res.json();
@@ -42,9 +48,10 @@ export async function fetchDefaultBranch(owner, repo, token) {
 }
 
 export async function fetchRepoTree(owner, repo, ref, token) {
+  const tk = getToken(token);
   const res = await fetch(
     `${GITHUB_API}/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`,
-    { headers: headers(token) }
+    { headers: headers(tk) }
   );
   if (!res.ok) {
     throw new Error(`Failed to fetch repo tree: ${res.status} ${res.statusText}`);
@@ -57,9 +64,10 @@ export async function fetchRepoTree(owner, repo, ref, token) {
 }
 
 export async function fetchFileContent(owner, repo, path, ref, token) {
+  const tk = getToken(token);
   const res = await fetch(
     `${GITHUB_API}/repos/${owner}/${repo}/contents/${path}?ref=${ref}`,
-    { headers: headers(token) }
+    { headers: headers(tk) }
   );
   if (!res.ok) {
     throw new Error(`Failed to fetch ${path}: ${res.status}`);

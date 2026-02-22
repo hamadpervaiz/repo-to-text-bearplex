@@ -19,18 +19,16 @@ export default function App() {
   const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState(null);
   const [error, setError] = useState('');
-  const [token, setToken] = useState('');
 
   const isDark = theme === 'dark';
   const logoSrc = isDark ? '/bearplex-logo.svg' : '/bearplex-logo-dark.svg';
 
-  const handleFetch = useCallback(async ({ url, token: tk, ref, path }) => {
+  const handleFetch = useCallback(async ({ url, ref, path }) => {
     setError('');
     setTree(null);
     setOutput('');
     setSelected(new Set());
     setLoading(true);
-    setToken(tk);
 
     try {
       const parsed = parseRepoUrl(url);
@@ -40,10 +38,10 @@ export default function App() {
       if (path) parsed.path = path;
 
       if (!parsed.ref) {
-        parsed.ref = await fetchDefaultBranch(parsed.owner, parsed.repo, tk);
+        parsed.ref = await fetchDefaultBranch(parsed.owner, parsed.repo);
       }
 
-      const flatTree = await fetchRepoTree(parsed.owner, parsed.repo, parsed.ref, tk);
+      const flatTree = await fetchRepoTree(parsed.owner, parsed.repo, parsed.ref);
       const items = flatTree.filter(item => item.type === 'blob' || item.type === 'tree');
 
       let filteredItems = items;
@@ -79,7 +77,7 @@ export default function App() {
       const nonBinaryPaths = paths.filter(p => !isBinaryFile(p));
 
       const fileContents = await fetchFilesContent(
-        repoInfo.owner, repoInfo.repo, nonBinaryPaths, repoInfo.ref, token,
+        repoInfo.owner, repoInfo.repo, nonBinaryPaths, repoInfo.ref, null,
         (current, total) => setProgress({ current, total })
       );
 
@@ -95,7 +93,7 @@ export default function App() {
       setGenerating(false);
       setProgress(null);
     }
-  }, [repoInfo, selected, token]);
+  }, [repoInfo, selected]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] noise">

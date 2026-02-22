@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Key, GitBranch, Folder, Loader2, ChevronDown, ArrowRight } from 'lucide-react';
+import { Search, GitBranch, Folder, Loader2, ChevronDown, ArrowRight, Info } from 'lucide-react';
 
 export default function RepoForm({ onSubmit, loading }) {
   const [url, setUrl] = useState('');
-  const [token, setToken] = useState('');
   const [ref, setRef] = useState('');
   const [path, setPath] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -13,7 +12,7 @@ export default function RepoForm({ onSubmit, loading }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!url.trim()) return;
-    onSubmit({ url: url.trim(), token: token.trim(), ref: ref.trim(), path: path.trim() });
+    onSubmit({ url: url.trim(), ref: ref.trim(), path: path.trim() });
   };
 
   return (
@@ -47,37 +46,13 @@ export default function RepoForm({ onSubmit, loading }) {
         </motion.div>
       </div>
 
-      {/* Token field */}
-      <div>
-        <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] mb-2.5">
-          <Key className="w-3.5 h-3.5" />
-          GitHub Token
-          <span className="text-xs text-[var(--text-muted)] font-normal">optional</span>
-          <span className="ml-auto">
-            <a
-              href="https://github.com/settings/tokens/new?description=repo-to-text&scopes=repo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] text-[var(--accent)] hover:text-[var(--accent-light)] transition-colors no-underline"
-            >
-              Create token &rarr;
-            </a>
-          </span>
-        </label>
-        <motion.div
-          animate={focused === 'token' ? { scale: 1.01 } : { scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        >
-          <input
-            type="password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            onFocus={() => setFocused('token')}
-            onBlur={() => setFocused(null)}
-            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-            className="input-field w-full px-4 py-2.5 text-sm font-mono"
-          />
-        </motion.div>
+      {/* Access note */}
+      <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-[var(--accent-glow)] border border-[var(--accent)]/10">
+        <Info className="w-4 h-4 text-[var(--accent-light)] shrink-0 mt-0.5" />
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+          For private repositories, ensure that <span className="font-medium text-[var(--text-primary)]">hamad@bearplex.com</span> has
+          read access to the repo so it can be fetched.
+        </p>
       </div>
 
       {/* Advanced toggle */}
