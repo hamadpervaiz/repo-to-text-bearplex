@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* ── Dark theme (default) ── */
 :root {
   --bg-primary: #08090d;
   --bg-secondary: #0c0e14;
@@ -24,6 +25,67 @@
   --warning: #d29922;
   --error: #f85149;
   --error-glow: rgba(248, 81, 73, 0.1);
+  --glass-bg: rgba(17, 19, 24, 0.75);
+  --input-bg: rgba(47, 129, 247, 0.03);
+  --input-hover-bg: rgba(47, 129, 247, 0.05);
+  --input-focus-bg: rgba(47, 129, 247, 0.05);
+  --btn-ghost-bg: rgba(47, 129, 247, 0.05);
+  --btn-ghost-hover-bg: rgba(47, 129, 247, 0.1);
+  --checkbox-border: rgba(56, 139, 253, 0.2);
+  --checkbox-bg: rgba(47, 129, 247, 0.03);
+  --tree-hover: rgba(47, 129, 247, 0.06);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.06);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.12);
+  --noise-opacity: 0.018;
+  --grid-line: rgba(47, 129, 247, 0.03);
+  --hero-gradient-1: rgba(47, 129, 247, 0.18);
+  --hero-gradient-2: rgba(56, 139, 253, 0.12);
+  --hero-gradient-3: rgba(31, 111, 214, 0.08);
+  --orb-opacity: 0.06;
+}
+
+/* ── Light theme ── */
+:root.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f3f4f6;
+  --bg-tertiary: #eaeef2;
+  --border-color: rgba(31, 35, 40, 0.1);
+  --border-hover: rgba(31, 35, 40, 0.2);
+  --text-primary: #1f2328;
+  --text-secondary: #59636e;
+  --text-muted: #8b949e;
+  --accent: #0969da;
+  --accent-light: #218bff;
+  --accent-bright: #54aeff;
+  --accent-glow: rgba(9, 105, 218, 0.08);
+  --accent-glow-md: rgba(9, 105, 218, 0.12);
+  --accent-glow-strong: rgba(9, 105, 218, 0.2);
+  --accent-deep: #0550ae;
+  --accent-sky: #218bff;
+  --success: #1a7f37;
+  --success-glow: rgba(26, 127, 55, 0.08);
+  --warning: #9a6700;
+  --error: #cf222e;
+  --error-glow: rgba(207, 34, 46, 0.06);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --input-bg: rgba(9, 105, 218, 0.03);
+  --input-hover-bg: rgba(9, 105, 218, 0.05);
+  --input-focus-bg: #ffffff;
+  --btn-ghost-bg: rgba(9, 105, 218, 0.04);
+  --btn-ghost-hover-bg: rgba(9, 105, 218, 0.08);
+  --checkbox-border: rgba(31, 35, 40, 0.2);
+  --checkbox-bg: rgba(9, 105, 218, 0.03);
+  --tree-hover: rgba(9, 105, 218, 0.05);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.08);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.15);
+  --noise-opacity: 0;
+  --grid-line: rgba(9, 105, 218, 0.04);
+  --hero-gradient-1: rgba(9, 105, 218, 0.06);
+  --hero-gradient-2: rgba(33, 139, 255, 0.05);
+  --hero-gradient-3: rgba(5, 80, 174, 0.03);
+  --orb-opacity: 0.04;
 }
 
 * {
@@ -38,27 +100,31 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Animated grid background */
 .bg-grid {
   background-image:
-    linear-gradient(rgba(47, 129, 247, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(47, 129, 247, 0.03) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
 /* Gradient mesh hero */
 .hero-gradient {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(47, 129, 247, 0.18), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 0%, rgba(56, 139, 253, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(31, 111, 214, 0.08), transparent);
+    radial-gradient(ellipse 80% 50% at 50% -20%, var(--hero-gradient-1), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 0%, var(--hero-gradient-2), transparent),
+    radial-gradient(ellipse 60% 40% at 20% 10%, var(--hero-gradient-3), transparent);
 }
 
 /* Glow effects */
 .glow-accent {
   box-shadow: 0 0 0 1px var(--border-color), 0 0 30px -8px var(--accent-glow-md);
+}
+.light .glow-accent {
+  box-shadow: 0 0 0 1px var(--border-color), 0 4px 24px -4px rgba(0,0,0,0.08);
 }
 .glow-accent-strong {
   box-shadow: 0 0 0 1px rgba(47, 129, 247, 0.25), 0 0 40px -8px var(--accent-glow-strong), 0 0 80px -20px var(--accent-glow);
@@ -69,15 +135,18 @@ body {
 
 /* Glass card */
 .glass-card {
-  background: rgba(17, 19, 24, 0.75);
+  background: var(--glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border-color);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 .glass-card:hover {
   border-color: var(--border-hover);
   box-shadow: 0 0 40px -10px var(--accent-glow);
+}
+.light .glass-card:hover {
+  box-shadow: 0 4px 30px -6px rgba(0,0,0,0.1);
 }
 
 /* Custom scrollbar */
@@ -89,16 +158,16 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Input styling */
 .input-field {
-  background: rgba(47, 129, 247, 0.03);
+  background: var(--input-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   color: var(--text-primary);
@@ -107,13 +176,13 @@ body {
 }
 .input-field:hover {
   border-color: var(--border-hover);
-  background: rgba(47, 129, 247, 0.05);
+  background: var(--input-hover-bg);
 }
 .input-field:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow), 0 0 24px -5px var(--accent-glow-md);
-  background: rgba(47, 129, 247, 0.05);
+  background: var(--input-focus-bg);
 }
 .input-field::placeholder {
   color: var(--text-muted);
@@ -121,7 +190,7 @@ body {
 
 /* Button styling */
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-sky) 50%, #1f6feb 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-sky) 50%, var(--accent-deep) 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -144,7 +213,7 @@ body {
   opacity: 1;
 }
 .btn-primary:hover {
-  box-shadow: 0 0 40px -5px var(--accent-glow-strong), 0 4px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 0 40px -5px var(--accent-glow-strong), 0 4px 20px rgba(0,0,0,0.2);
   transform: translateY(-1px);
 }
 .btn-primary:active {
@@ -163,7 +232,7 @@ body {
 }
 
 .btn-ghost {
-  background: rgba(47, 129, 247, 0.05);
+  background: var(--btn-ghost-bg);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   border-radius: 8px;
@@ -173,9 +242,12 @@ body {
   transition: all 0.2s ease;
 }
 .btn-ghost:hover {
-  background: rgba(47, 129, 247, 0.1);
+  background: var(--btn-ghost-hover-bg);
   border-color: var(--border-hover);
   box-shadow: 0 0 15px -5px var(--accent-glow);
+}
+.light .btn-ghost:hover {
+  box-shadow: 0 2px 10px -3px rgba(0,0,0,0.1);
 }
 
 /* Checkbox styling */
@@ -183,9 +255,9 @@ body {
   appearance: none;
   width: 16px;
   height: 16px;
-  border: 1.5px solid rgba(56, 139, 253, 0.2);
+  border: 1.5px solid var(--checkbox-border);
   border-radius: 4px;
-  background: rgba(47, 129, 247, 0.03);
+  background: var(--checkbox-bg);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -234,7 +306,7 @@ body {
   margin: 0 4px;
 }
 .tree-row:hover {
-  background: rgba(47, 129, 247, 0.06);
+  background: var(--tree-hover);
 }
 
 /* Tag/badge */
@@ -252,6 +324,9 @@ body {
   background: var(--accent-glow);
   color: var(--accent-light);
   border: 1px solid rgba(47, 129, 247, 0.2);
+}
+.light .badge-accent {
+  color: var(--accent);
 }
 .badge-success {
   background: var(--success-glow);
@@ -273,7 +348,7 @@ body {
   content: '';
   position: fixed;
   inset: 0;
-  opacity: 0.018;
+  opacity: var(--noise-opacity);
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
