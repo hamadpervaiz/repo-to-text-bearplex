@@ -15,7 +15,7 @@ cpSync('dist', '.vercel/output/static', { recursive: true });
 // 4. Write edge middleware function
 writeFileSync('.vercel/output/functions/_middleware.func/index.js', `
 export default function middleware(request) {
-  const PASSWORD = process.env.SITE_PASSWORD || 'Taimoor1436';
+  const PASSWORD = 'Taimoor1436';
   const auth = request.headers.get('authorization');
 
   if (auth) {
@@ -25,11 +25,10 @@ export default function middleware(request) {
       const decoded = atob(encoded);
       const idx = decoded.indexOf(':');
       const pwd = idx !== -1 ? decoded.substring(idx + 1) : decoded;
-      if (pwd === PASSWORD) {
-        return new Response(null, {
-          headers: { 'x-middleware-next': '1' },
-        });
-      }
+      return new Response(JSON.stringify({ decoded, idx, pwd, PASSWORD, match: pwd === PASSWORD, auth }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
     }
   }
 
