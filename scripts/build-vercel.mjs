@@ -36,7 +36,7 @@ writeFileSync('.vercel/output/config.json', JSON.stringify({
 mkdirSync('.vercel/output/functions/_middleware.func', { recursive: true });
 
 writeFileSync('.vercel/output/functions/_middleware.func/index.js', `
-var PASSWORD = process.env.SITE_PASSWORD || 'Taimoor1436';
+var PASSWORD = 'Taimoor1436';
 
 export default function middleware(request) {
   var auth = request.headers.get('authorization');
