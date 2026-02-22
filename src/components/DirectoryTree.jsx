@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronDown, File, Folder, FolderOpen, FolderTree } from 'lucide-react';
 import { isBinaryFile } from '../utils/formatter';
 
@@ -41,19 +42,24 @@ function TreeNode({ node, selected, onToggle, depth = 0 }) {
 
   return (
     <div>
-      <div
+      <motion.div
         className="tree-row flex items-center gap-1.5 py-[3px] px-2 cursor-pointer group"
         style={{ paddingLeft: `${depth * 18 + 8}px` }}
+        whileHover={{ x: 2 }}
+        transition={{ duration: 0.1 }}
       >
         {isDir ? (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="p-0 border-0 bg-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] cursor-pointer flex-shrink-0 transition-colors"
+            className="p-0 border-0 bg-transparent text-[var(--text-muted)] hover:text-[var(--accent-light)] cursor-pointer flex-shrink-0 transition-colors"
           >
-            {expanded
-              ? <ChevronDown className="w-3.5 h-3.5" />
-              : <ChevronRight className="w-3.5 h-3.5" />
-            }
+            <motion.span
+              animate={{ rotate: expanded ? 0 : -90 }}
+              transition={{ duration: 0.15 }}
+              className="inline-flex"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </motion.span>
           </button>
         ) : (
           <span className="w-3.5 flex-shrink-0" />
@@ -92,17 +98,28 @@ function TreeNode({ node, selected, onToggle, depth = 0 }) {
             {formatSize(node.size)}
           </span>
         )}
-      </div>
+      </motion.div>
 
-      {isDir && expanded && children.map(child => (
-        <TreeNode
-          key={child.path}
-          node={child}
-          selected={selected}
-          onToggle={onToggle}
-          depth={depth + 1}
-        />
-      ))}
+      <AnimatePresence initial={false}>
+        {isDir && expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+          >
+            {children.map(child => (
+              <TreeNode
+                key={child.path}
+                node={child}
+                selected={selected}
+                onToggle={onToggle}
+                depth={depth + 1}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -112,11 +129,11 @@ function getFileColor(ext) {
     js: '#f7df1e', jsx: '#61dafb', ts: '#3178c6', tsx: '#3178c6',
     py: '#3776ab', rb: '#cc342d', go: '#00add8', rs: '#dea584',
     java: '#b07219', css: '#563d7c', scss: '#c6538c', html: '#e34c26',
-    json: '#a8a8a8', md: '#ffffff', yml: '#cb171e', yaml: '#cb171e',
+    json: '#8b949e', md: '#c9d1d9', yml: '#cb171e', yaml: '#cb171e',
     sh: '#89e051', bash: '#89e051', sql: '#e38c00', vue: '#4fc08d',
     svelte: '#ff3e00', php: '#4f5d95', swift: '#f05138', kt: '#7f52ff',
   };
-  return colors[ext] || '#71717a';
+  return colors[ext] || '#484f58';
 }
 
 function getAllFilePaths(node) {
@@ -165,7 +182,15 @@ export default function DirectoryTree({ tree, selected, onSelectionChange }) {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-[var(--text-muted)] tabular-nums">
-            {selectedCount}/{totalCount}
+            <motion.span
+              key={selectedCount}
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-block"
+            >
+              {selectedCount}
+            </motion.span>
+            /{totalCount}
           </span>
           <input
             type="checkbox"

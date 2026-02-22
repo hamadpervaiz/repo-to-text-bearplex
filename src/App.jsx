@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Github, Zap, ArrowRight, Code2, FileText, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Github, Zap, ArrowRight, Code2, FileText, Sparkles, ExternalLink } from 'lucide-react';
 import RepoForm from './components/RepoForm';
 import DirectoryTree from './components/DirectoryTree';
 import OutputPanel from './components/OutputPanel';
@@ -93,155 +94,247 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] noise">
       {/* Header */}
-      <header className="relative z-10 border-b border-[var(--border-color)] bg-[var(--bg-primary)]/80 backdrop-blur-xl sticky top-0">
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="relative z-20 border-b border-[var(--border-color)] bg-[var(--bg-primary)]/80 backdrop-blur-xl sticky top-0"
+      >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/bearplex-logo.svg" alt="BearPlex" className="h-7 brightness-0 invert opacity-90" />
-          </div>
+          <a href="/" className="flex items-center gap-3 no-underline">
+            <img src="/bearplex-logo.svg" alt="BearPlex" className="h-9 brightness-0 invert opacity-95" />
+          </a>
           <div className="flex items-center gap-4">
-            <a
+            <motion.a
               href="https://github.com/hamadpervaiz/repo-to-text-bearplex"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <Github className="w-4 h-4" />
               <span className="hidden sm:inline">Source</span>
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href="https://bearplex.com"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-ghost px-3 py-1.5 flex items-center gap-1.5 text-xs no-underline"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               bearplex.com
-              <ArrowRight className="w-3 h-3" />
-            </a>
+              <ExternalLink className="w-3 h-3" />
+            </motion.a>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Hero + Form */}
-      <div className="relative hero-gradient bg-grid">
-        <div className="max-w-6xl mx-auto px-6 pt-16 pb-20">
+      <div className="relative hero-gradient bg-grid overflow-hidden">
+        {/* Floating orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="orb-1 absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-[var(--accent)]/[0.06] blur-[100px]" />
+          <div className="orb-2 absolute -top-20 right-1/4 w-72 h-72 rounded-full bg-[var(--accent-sky)]/[0.05] blur-[80px]" />
+          <div className="orb-3 absolute top-40 left-1/2 -translate-x-1/2 w-[500px] h-64 rounded-full bg-[var(--accent-deep)]/[0.04] blur-[120px]" />
+        </div>
+
+        <div className="max-w-6xl mx-auto px-6 pt-20 pb-24 relative z-10">
           {/* Hero text */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 badge badge-accent mb-5">
+          <motion.div
+            className="text-center mb-14"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.div
+              className="inline-flex items-center gap-2 badge badge-accent mb-6"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               <Sparkles className="w-3 h-3" />
               Open Source Tool
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--text-primary)] mb-4">
-              Repo to
-              <span className="bg-gradient-to-r from-[var(--accent)] to-purple-400 bg-clip-text text-transparent"> Plain Text</span>
+            </motion.div>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[var(--text-primary)] mb-5 leading-[1.1]">
+              Repo to{' '}
+              <span className="bg-gradient-to-r from-[var(--accent)] via-[var(--accent-light)] to-[var(--accent-bright)] bg-clip-text text-transparent">
+                Plain Text
+              </span>
             </h1>
-            <p className="text-base sm:text-lg text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
+            <motion.p
+              className="text-lg sm:text-xl text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
               Convert any GitHub repository into a single text file.
-              Perfect for feeding code context into LLMs.
-            </p>
-          </div>
+              <br />
+              <span className="text-[var(--text-muted)]">Perfect for feeding code context into LLMs.</span>
+            </motion.p>
+          </motion.div>
 
           {/* Form card */}
-          <div className="max-w-2xl mx-auto">
-            <div className="glass-card rounded-2xl p-6 glow-accent">
+          <motion.div
+            className="max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="glass-card rounded-2xl p-7 glow-accent">
               <RepoForm onSubmit={handleFetch} loading={loading} />
             </div>
-          </div>
+          </motion.div>
 
           {/* Feature pills */}
-          {!tree && (
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
-              {[
-                { icon: Github, label: 'Public & Private Repos' },
-                { icon: Code2, label: 'Smart File Selection' },
-                { icon: FileText, label: 'LLM-Ready Output' },
-              ].map(({ icon: Icon, label }) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-[var(--border-color)] text-xs text-[var(--text-secondary)]"
-                >
-                  <Icon className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                  {label}
-                </div>
-              ))}
-            </div>
-          )}
+          <AnimatePresence>
+            {!tree && (
+              <motion.div
+                className="flex flex-wrap items-center justify-center gap-3 mt-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                {[
+                  { icon: Github, label: 'Public & Private Repos' },
+                  { icon: Code2, label: 'Smart File Selection' },
+                  { icon: FileText, label: 'LLM-Ready Output' },
+                ].map(({ icon: Icon, label }, i) => (
+                  <motion.div
+                    key={label}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--accent)]/[0.03] border border-[var(--border-color)] text-xs text-[var(--text-secondary)]"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.5 + i * 0.1 }}
+                    whileHover={{ scale: 1.05, borderColor: 'rgba(47, 129, 247, 0.2)' }}
+                  >
+                    <Icon className="w-3.5 h-3.5 text-[var(--accent-light)]" />
+                    {label}
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
       {/* Error */}
-      {error && (
-        <div className="max-w-6xl mx-auto px-6 -mt-6 mb-6 relative z-10">
-          <div className="bg-[var(--error-glow)] border border-red-500/20 text-[var(--error)] rounded-xl px-5 py-4 text-sm flex items-start gap-3 animate-fade-in-up">
-            <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center text-xs font-bold">!</span>
-            <span>{error}</span>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            className="max-w-6xl mx-auto px-6 -mt-6 mb-6 relative z-10"
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="bg-[var(--error-glow)] border border-red-500/20 text-[var(--error)] rounded-xl px-5 py-4 text-sm flex items-start gap-3">
+              <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center text-xs font-bold">!</span>
+              <span>{error}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Tree + Output */}
-      {tree && (
-        <div className="max-w-6xl mx-auto px-6 -mt-8 pb-16 relative z-10">
-          {/* Repo info bar */}
-          <div className="flex items-center justify-between mb-4 animate-fade-in-up">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--accent-glow)] flex items-center justify-center">
-                <Github className="w-4 h-4 text-[var(--accent-light)]" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-[var(--text-primary)]">
-                  {repoInfo.owner}/{repoInfo.repo}
-                </h2>
-                <p className="text-xs text-[var(--text-muted)]">
-                  {repoInfo.ref}{repoInfo.path ? ` / ${repoInfo.path}` : ''}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleGenerate}
-              disabled={generating || selected.size === 0}
-              className="btn-primary px-5 py-2.5 flex items-center gap-2"
+      <AnimatePresence>
+        {tree && (
+          <motion.div
+            className="max-w-6xl mx-auto px-6 -mt-10 pb-16 relative z-10"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Repo info bar */}
+            <motion.div
+              className="flex items-center justify-between mb-5"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <Zap className="w-4 h-4" />
-              Generate
-              <span className="badge badge-accent text-[10px] py-0 px-1.5 border-0 bg-white/20 text-white">
-                {selected.size}
-              </span>
-            </button>
-          </div>
+              <div className="flex items-center gap-3">
+                <motion.div
+                  className="w-10 h-10 rounded-xl bg-[var(--accent-glow)] border border-[var(--border-color)] flex items-center justify-center"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: 'spring', stiffness: 400 }}
+                >
+                  <Github className="w-5 h-5 text-[var(--accent-light)]" />
+                </motion.div>
+                <div>
+                  <h2 className="text-base font-semibold text-[var(--text-primary)]">
+                    {repoInfo.owner}<span className="text-[var(--text-muted)]">/</span>{repoInfo.repo}
+                  </h2>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {repoInfo.ref}{repoInfo.path ? ` / ${repoInfo.path}` : ''}
+                  </p>
+                </div>
+              </div>
+              <motion.button
+                onClick={handleGenerate}
+                disabled={generating || selected.size === 0}
+                className="btn-primary px-6 py-3 flex items-center gap-2.5"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Zap className="w-4 h-4" />
+                Generate
+                <span className="text-[11px] py-0 px-2 rounded-full bg-white/20 text-white font-semibold">
+                  {selected.size}
+                </span>
+              </motion.button>
+            </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            {/* Directory Tree */}
-            <div className="glass-card rounded-2xl overflow-hidden flex flex-col">
-              <DirectoryTree
-                tree={tree}
-                selected={selected}
-                onSelectionChange={setSelected}
-              />
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {/* Directory Tree */}
+              <motion.div
+                className="glass-card rounded-2xl overflow-hidden flex flex-col"
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <DirectoryTree
+                  tree={tree}
+                  selected={selected}
+                  onSelectionChange={setSelected}
+                />
+              </motion.div>
 
-            {/* Output */}
-            <div className="glass-card rounded-2xl overflow-hidden flex flex-col">
-              <OutputPanel
-                output={output}
-                loading={generating}
-                progress={progress}
-              />
+              {/* Output */}
+              <motion.div
+                className="glass-card rounded-2xl overflow-hidden flex flex-col"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <OutputPanel
+                  output={output}
+                  loading={generating}
+                  progress={progress}
+                />
+              </motion.div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--border-color)] py-6 relative z-10">
+      <motion.footer
+        className="border-t border-[var(--border-color)] py-8 relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src="/bearplex-logo.svg" alt="BearPlex" className="h-4 brightness-0 invert opacity-40" />
-          </div>
+          <a href="/" className="flex items-center">
+            <img src="/bearplex-logo.svg" alt="BearPlex" className="h-5 brightness-0 invert opacity-30 hover:opacity-50 transition-opacity" />
+          </a>
           <p className="text-xs text-[var(--text-muted)]">
             Built by BearPlex &middot; All processing happens in your browser
           </p>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 }
