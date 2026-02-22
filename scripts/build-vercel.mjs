@@ -19,12 +19,16 @@ export default function middleware(request) {
   const auth = request.headers.get('authorization');
 
   if (auth) {
-    const [scheme, encoded] = auth.split(' ');
-    if (scheme === 'Basic') {
+    const [scheme, ...rest] = auth.split(' ');
+    const encoded = rest.join(' ');
+    if (scheme === 'Basic' && encoded) {
       const decoded = atob(encoded);
-      const [, pwd] = decoded.split(':');
+      const idx = decoded.indexOf(':');
+      const pwd = idx !== -1 ? decoded.substring(idx + 1) : decoded;
       if (pwd === PASSWORD) {
-        return;
+        return new Response(null, {
+          headers: { 'x-middleware-next': '1' },
+        });
       }
     }
   }
