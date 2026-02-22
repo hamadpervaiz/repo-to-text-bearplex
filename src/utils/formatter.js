@@ -100,9 +100,51 @@ export function formatOutput(repoInfo, selectedFiles, fileContents, directoryTre
   return output;
 }
 
+export function estimateTokens(text) {
+  // Better heuristic token estimation that accounts for code patterns.
+  // Real BPE tokenizers split on whitespace, punctuation, camelCase, etc.
+  // Code has many short tokens (brackets, operators, single-char vars).
+  let tokens = 0;
+
+  // Split by whitespace first
+  const words = text.split(/\s+/).filter(Boolean);
+
+  for (const word of words) {
+    if (word.length === 0) continue;
+    if (word.length <= 2) {
+      // Short tokens: brackets, operators, single chars = 1 token each
+      tokens += 1;
+    } else if (word.length <= 5) {
+      // Short words/keywords: "const", "true", "if" = 1 token
+      tokens += 1;
+    } else if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(word)) {
+      // Identifiers — camelCase/snake_case get split by tokenizers
+      // Count subwords: split on case changes and underscores
+      const subwords = word.split(/(?=[A-Z])|_/).filter(Boolean);
+      tokens += Math.max(1, Math.ceil(subwords.length * 0.8));
+    } else if (/[{}[\]().,;:!?@#$%^&*=+\-/<>|~`"'\\]/.test(word)) {
+      // Mixed punctuation — each special char tends to be its own token
+      const specials = (word.match(/[^a-zA-Z0-9]/g) || []).length;
+      const alphaRuns = word.split(/[^a-zA-Z0-9]+/).filter(Boolean);
+      tokens += specials;
+      for (const run of alphaRuns) {
+        tokens += Math.max(1, Math.ceil(run.length / 4));
+      }
+    } else {
+      // Fallback: ~3.3 chars per token (tighter than 4, matches real tokenizers better)
+      tokens += Math.max(1, Math.ceil(word.length / 3.3));
+    }
+  }
+
+  // Whitespace/newlines themselves cost tokens too (~1 per line)
+  const newlines = (text.match(/\n/g) || []).length;
+  tokens += Math.ceil(newlines * 0.2);
+
+  return tokens;
+}
+
 export function formatTokenEstimate(text) {
-  // Rough estimate: ~4 chars per token
-  const tokens = Math.ceil(text.length / 4);
+  const tokens = estimateTokens(text);
   if (tokens < 1000) return `~${tokens} tokens`;
   if (tokens < 1000000) return `~${(tokens / 1000).toFixed(1)}k tokens`;
   return `~${(tokens / 1000000).toFixed(1)}M tokens`;
